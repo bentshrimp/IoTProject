@@ -20,7 +20,7 @@ const client = mqtt.connect("mqtt://192.168.43.123");
 client.on("connect", () => {
   console.log("mqtt connect");
   client.subscribe("bme280");
-  client.subscribe("PMS7003m");
+  client.subscribe("pms7003m");
 });
 
 client.on("message", async (topic, message) => {
@@ -78,10 +78,10 @@ io.on("connection", (socket) => {
         socket.emit("socket_evt_pms7003m", JSON.stringify(data[0]));
       });
   });
-  //웹에서 소켓을 이용한 LED ON/OFF 제어하기
-  socket.on("socket_evt_led", (data) => {
+  //웹에서 소켓을 이용한 FAN ON/OFF 제어하기
+  socket.on("socket_evt_fan", (data) => {
     var obj = JSON.parse(data);
-    client.publish("led", obj.led + "");
+    client.publish("fan", obj.fan + "");
   });
 });
 
