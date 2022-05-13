@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const BME280Schema = mongoose.Schema({
+const SensorsSchema = mongoose.Schema({
   tmp: {
     type: String,
     required: true,
@@ -16,9 +16,21 @@ const BME280Schema = mongoose.Schema({
     type: String,
     require: true,
   },
+  pm1: {
+    type: String,
+    require: true,
+  },
+  pm2: {
+    type: String,
+    require: true,
+  },
+  pm10: {
+    type: String,
+    require: true,
+  },
   created_at: {
     type: Date,
     default: Date.now,
   },
 });
-module.exports = mongoose.model("BME280", BME280Schema);
+module.exports = mongoose.model("Sensors", SensorsSchema);

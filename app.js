@@ -5,8 +5,7 @@ const bodyParser = require("body-parser");
 const mqtt = require("mqtt");
 const http = require("http");
 const mongoose = require("mongoose");
-const BME280 = require("./models/BME280");
-const PMS7003m = require("./models/PMS7003m");
+const Sensors = require("./models/sensors");
 const devicesRouter = require("./routes/devices");
 require("dotenv/config");
 
@@ -16,11 +15,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/devices", devicesRouter);
 
 //MQTT접속 하기
-const client = mqtt.connect("mqtt://192.168.43.123");
+const client = mqtt.connect("mqtt://192.168.9.218");
 client.on("connect", () => {
   console.log("mqtt connect");
-  client.subscribe("bme280");
-  client.subscribe("pms7003m");
+  client.subscribe("sensors");
 });
 
 client.on("message", async (topic, message) => {
@@ -37,21 +35,19 @@ client.on("message", async (topic, message) => {
   );
   console.log(obj);
 
-  const bme280 = new BME280({
+  const sensors = new Sensors({
     tmp: obj.tmp,
-    hum: obj.hum,
-    pre: obj.pre,
-    created_at: obj.created_at,
-  });
-
-  const pms7003m = new PMS7003m({
-    den: obj.den,
+    hum: obj.humi,
+    pre: obj.press,
+    alt: obj.altitude,
+    pm1: obj.pm1,
+    pm2: obj.pm25,
+    pm10: obj.pm10,
     created_at: obj.created_at,
   });
 
   try {
-    const saveBME280 = await bme280.save();
-    const savePMS7003m = await pms7003m.save();
+    const saveSensors = await sensors.save();
     console.log("insert OK");
   } catch (err) {
     console.log({ message: err });
@@ -61,27 +57,20 @@ app.set("port", "3000");
 var server = http.createServer(app);
 var io = require("socket.io")(server);
 io.on("connection", (socket) => {
-  //웹에서 소켓을 이용한 BME280 센서데이터 모니터링
+  //웹에서 소켓을 이용한 sensors 센서데이터 모니터링
   socket.on("socket_evt_mqtt", function (data) {
-    BME280.find({})
+    Sensors.find({})
       .sort({ _id: -1 })
       .limit(1)
       .then((data) => {
         //console.log(JSON.stringify(data[0]));
-        socket.emit("socket_evt_bme280", JSON.stringify(data[0]));
-      });
-    PMS7003m.find({})
-      .sort({ _id: -1 })
-      .limit(1)
-      .then((data) => {
-        //console.log(JSON.stringify(data[0]));
-        socket.emit("socket_evt_pms7003m", JSON.stringify(data[0]));
+        socket.emit("socket_evt_mqtt", JSON.stringify(data[0]));
       });
   });
   //웹에서 소켓을 이용한 FAN ON/OFF 제어하기
-  socket.on("socket_evt_fan", (data) => {
+  socket.on("socket_evt_led", (data) => {
     var obj = JSON.parse(data);
-    client.publish("fan", obj.fan + "");
+    client.publish("led", obj.led + "");
   });
 });
 

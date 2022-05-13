@@ -12,11 +12,26 @@
       $(document).ready(function () {
         socket = io.connect(); // 3000port
         // Node.js보낸 데이터를 수신하는 부분
-        socket.on("mqttlist", function (data) {
+        socket.on("socket_evt_mqtt", function (data) {
           data = JSON.parse(data);
+          console.log(data);
           $(".mqttlist").html(
-            "<li>" + data.tmp + "(" + data.hum + "%)" + data.pre + "</li>",
-            "<li>" + data.den + "</li>"
+            "<li>" +
+              "tmp: " +
+              data.tmp +
+              "(" +
+              data.humi +
+              "%)" +
+              "press: " +
+              data.press +
+              data.altitude +
+              "pm1: " +
+              data.pm1 +
+              "pm2.5: " +
+              data.pm2 +
+              "pm10: " +
+              data.pm10 +
+              "</li>"
           );
         });
         if (timer == null) {
@@ -50,7 +65,7 @@
     </script>
   </head>
   <body>
-    <h2>socket 이용한 DHT11(온도:습도) 모니터링 서비스</h2>
+    <h2>socket 이용한 센서 모니터링 서비스</h2>
     <div id="msg">
       <div id="mqtt_logs">
         <ul class="mqttlist"></ul>
