@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/devices", devicesRouter);
 
 //MQTT접속 하기
-const client = mqtt.connect("mqtt://192.168.9.218");
+const client = mqtt.connect("mqtt://192.168.201.218");
 client.on("connect", () => {
   console.log("mqtt connect");
   client.subscribe("sensors");
@@ -33,7 +33,7 @@ client.on("message", async (topic, message) => {
   obj.created_at = new Date(
     Date.UTC(year, month, today, hours, minutes, seconds)
   );
-  console.log(obj);
+  // console.log(obj);
 
   const sensors = new Sensors({
     tmp: obj.tmp,

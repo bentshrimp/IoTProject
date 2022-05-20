@@ -20,11 +20,11 @@
               "tmp: " +
               data.tmp +
               "(" +
-              data.humi +
+              data.hum +
               "%)" +
               "press: " +
-              data.press +
-              data.altitude +
+              data.pre +
+              data.alt +
               "pm1: " +
               data.pm1 +
               "pm2.5: " +
@@ -50,7 +50,7 @@
         if (value == "1") var value = "on";
         else if (value == "2") var value = "off";
         $.ajax({
-          url: "http://192.168.43.4:3000/devices/led",
+          url: "http://192.168.201.69:3000/devices/fan",
           type: "post",
           data: { flag: value },
           success: ledStatus,
